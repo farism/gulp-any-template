@@ -14,7 +14,15 @@
   },
   "keywords": [
     "gulpplugin",
-    "elm"
+    "dust",
+    "ejs",
+    "handlebars",
+    "hogan",
+    "lodash",
+    "mustache",
+    "pug",
+    "swig",
+    "underscore",
   ],
   "author": "Faris Mustafa <farismmk@gmail.com>",
   "license": "MIT",
