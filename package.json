@@ -1,0 +1,50 @@
+{
+  "name": "gulp-any-template",
+  "version": "0.1.0",
+  "description": "A gulp plugin to handle the most common templates",
+  "main": "index.js",
+  "scripts": {
+    "precommit": "lint-staged",
+    "pretty": "prettier --write --no-semi --single-quote --trailing-comma es5",
+    "test": "mocha ./test/**.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/farism/gulp-any-template.git"
+  },
+  "keywords": [
+    "gulpplugin",
+    "elm"
+  ],
+  "author": "Faris Mustafa <farismmk@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/farism/gulp-any-template/issues"
+  },
+  "homepage": "https://github.com/farism/gulp-any-template#readme",
+  "engines": {
+    "node": ">=4.2.0"
+  },
+  "dependencies": {
+    "dustjs-linkedin": "^2.7.5",
+    "ejs": "^2.5.7",
+    "handlebars": "^4.0.10",
+    "hogan": "^1.0.2",
+    "hogan.js": "^3.0.2",
+    "lodash.template": "^4.4.0",
+    "mustache": "^2.3.0",
+    "pug": "^2.0.0-rc.3",
+    "swig": "^1.4.2",
+    "through2": "^2.0.3",
+    "underscore.template": "^0.1.7",
+    "vinyl": "^2.1.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.1",
+    "husky": "^0.14.3",
+    "lint-staged": "^4.0.3",
+    "mocha": "^3.5.0",
+    "prettier": "^1.5.3",
+    "stream-assert": "^2.0.3"
+  }
+}
