@@ -22,7 +22,7 @@
     "mustache",
     "pug",
     "swig",
-    "underscore",
+    "underscore"
   ],
   "author": "Faris Mustafa <farismmk@gmail.com>",
   "license": "MIT",
