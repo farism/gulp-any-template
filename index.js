@@ -13,9 +13,9 @@ const pug = require('pug')
 const swig = require('swig')
 const underscore = require('underscore.template')
 
-const PLUGIN = 'gulp-any-template'
-
 dust.config.whitespace = true
+
+const PLUGIN = 'gulp-any-template'
 
 function compileDust(template, params) {
   return new Promise(function(resolve, reject) {
@@ -102,7 +102,7 @@ const compilers = {
   '.underscore': compileUnderscore,
 }
 
-module.exports = function(params) {
+function anyTemplate(params) {
   const transform = function(file, encode, callback) {
     if (file.isNull()) {
       return callback()
@@ -125,7 +125,7 @@ module.exports = function(params) {
 
     const _this = this
 
-    compiler(String(file.contents), params)
+    compiler(String(file.contents), params || {})
       .then(function(result) {
         _this.push(
           new File({
@@ -136,10 +136,16 @@ module.exports = function(params) {
         callback()
       })
       .catch(function(err) {
-        this.emit('error', new Error(err.message))
+        _this.emit('error', new Error(err.message))
         callback()
       })
   }
 
   return through.obj(transform)
 }
+
+anyTemplate.compile = function(filepath) {
+  return compilers[path.extname(filepath)]
+}
+
+module.exports = anyTemplate
