@@ -116,7 +116,7 @@ function anyTemplate(params) {
       return callback()
     }
 
-    const compiler = compilers[path.extname(file.path)]
+    const compiler = anyTemplate.compiler(file.path)
 
     if (!compiler) {
       this.push(file)
@@ -144,7 +144,7 @@ function anyTemplate(params) {
   return through.obj(transform)
 }
 
-anyTemplate.compile = function(filepath) {
+anyTemplate.compiler = function(filepath) {
   return compilers[path.extname(filepath)]
 }
 
