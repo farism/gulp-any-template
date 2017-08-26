@@ -17,77 +17,94 @@ dust.config.whitespace = true
 
 const PLUGIN = 'gulp-any-template'
 
-function compileDust(template, params) {
-  return new Promise(function(resolve, reject) {
-    dust.loadSource(dust.compile(template, 'template'))
-    dust.render('template', params, function(err, output) {
-      if (err) {
-        reject(err)
-      } else {
+function compileDust(template) {
+  return function(params) {
+    return new Promise(function(resolve, reject) {
+      dust.loadSource(dust.compile(template, 'template'))
+      dust.render('template', params, function(err, output) {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(output)
+        }
+      })
+    })
+  }
+}
+
+function compileEJS(template) {
+  return function(params) {
+    return new Promise(function(resolve, reject) {
+      try {
+        const output = ejs.render(template, params)
         resolve(output)
+      } catch (err) {
+        reject(err)
       }
     })
-  })
+  }
 }
 
-function compileEJS(template, params) {
-  return new Promise(function(resolve, reject) {
-    try {
-      const output = ejs.render(template, params)
+function compileHandlebars(template) {
+  return function(params) {
+    return new Promise(function(resolve, reject) {
+      const output = handlebars.compile(template)(params)
       resolve(output)
-    } catch (err) {
-      reject(err)
-    }
-  })
+    })
+  }
 }
 
-function compileHandlebars(template, params) {
-  return new Promise(function(resolve, reject) {
-    const output = handlebars.compile(template)(params)
-    resolve(output)
-  })
+function compileHogan(template) {
+  return function(params) {
+    return new Promise(function(resolve, reject) {
+      const output = hogan.compile(template).render(params)
+      resolve(output)
+    })
+  }
 }
 
-function compileHogan(template, params) {
-  return new Promise(function(resolve, reject) {
-    const output = hogan.compile(template).render(params)
-    resolve(output)
-  })
+function compileLodash(template) {
+  return function(params) {
+    return new Promise(function(resolve, reject) {
+      const output = lodash(template)(params)
+      resolve(output)
+    })
+  }
 }
 
-function compileLodash(template, params) {
-  return new Promise(function(resolve, reject) {
-    const output = lodash(template)(params)
-    resolve(output)
-  })
+function compileMustache(template) {
+  return function(params) {
+    return new Promise(function(resolve, reject) {
+      const output = mustache.render(template, params)
+      resolve(output)
+    })
+  }
 }
 
-function compileMustache(template, params) {
-  return new Promise(function(resolve, reject) {
-    const output = mustache.render(template, params)
-    resolve(output)
-  })
+function compilePug(template) {
+  return function(params) {
+    return new Promise(function(resolve, reject) {
+      const output = pug.render(template, params)
+      resolve(output)
+    })
+  }
 }
 
-function compilePug(template, params) {
-  return new Promise(function(resolve, reject) {
-    const output = pug.render(template, params)
-    resolve(output)
-  })
+function compileSwig(template) {
+  return function(params) {
+    return new Promise(function(resolve, reject) {
+      const output = swig.compile(template)(params)
+      resolve(output)
+    })
+  }
 }
-
-function compileSwig(template, params) {
-  return new Promise(function(resolve, reject) {
-    const output = swig.compile(template)(params)
-    resolve(output)
-  })
-}
-
-function compileUnderscore(template, params) {
-  return new Promise(function(resolve, reject) {
-    const output = underscore(template)(params)
-    resolve(output)
-  })
+function compileUnderscore(template) {
+  return function(params) {
+    return new Promise(function(resolve, reject) {
+      const output = underscore(template)(params)
+      resolve(output)
+    })
+  }
 }
 
 const compilers = {
@@ -109,23 +126,24 @@ function anyTemplate(params) {
     }
 
     if (file.isStream()) {
-      this.emit(
-        'error',
-        new Error('gulp-any-template: Streaming not supported')
-      )
+      this.emit('error', new Error(`${PLUGIN}: Streaming not supported`))
       return callback()
     }
 
-    const compiler = anyTemplate.compiler(file.path)
+    const compiler = anyTemplate.compiler(file)
 
     if (!compiler) {
       this.push(file)
+      this.emit(
+        'error',
+        new Error(`${PLUGIN}: Template extension not supported`)
+      )
       return callback()
     }
 
     const _this = this
 
-    compiler(String(file.contents), params || {})
+    compiler(params || {})
       .then(function(result) {
         _this.push(
           new File({
@@ -144,8 +162,10 @@ function anyTemplate(params) {
   return through.obj(transform)
 }
 
-anyTemplate.compiler = function(filepath) {
-  return compilers[path.extname(filepath)]
+anyTemplate.compiler = function(file) {
+  const compiler = compilers[path.extname(file.path)]
+
+  return compiler && compiler(String(file.contents))
 }
 
 module.exports = anyTemplate

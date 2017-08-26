@@ -55,6 +55,22 @@ describe('gulp-any-template', function() {
     stream.end()
   })
 
+  it('should emit error on unsupported extension', function(done) {
+    stream
+      .once('error', function(err) {
+        expect(err.message).to.eql(
+          'gulp-any-template: Template extension not supported'
+        )
+      })
+      .pipe(assert.end(done))
+    stream.write(
+      new File({
+        path: fixture('index.foobar'),
+      })
+    )
+    stream.end()
+  })
+
   it('should ignore null files', function(done) {
     stream.pipe(assert.length(0)).pipe(assert.end(done))
     stream.write(new File())
