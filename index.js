@@ -147,7 +147,7 @@ function anyTemplate(params) {
       .then(function(result) {
         _this.push(
           new File({
-            path: file.path,
+            path: file.path.replace(file.base, ''),
             contents: Buffer(result),
           })
         )
